@@ -29,8 +29,10 @@ namespace Serilog.Logfmt
         {
             if (logEvent == null) throw new ArgumentNullException(nameof(logEvent));
             if (output == null) throw new ArgumentNullException(nameof(output));
-            output.Write("ts={0} ", logEvent.Timestamp.UtcDateTime.ToString("o"));
-            output.Write("level={0} ", _options.GrafanaLevels ? GrafanaLevelValue(logEvent.Level) : logEvent.Level.ToString());
+            if (!_options.ExcludeTS)
+                output.Write("ts={0} ", logEvent.Timestamp.UtcDateTime.ToString("o"));
+            if (!_options.ExcludeLevel)
+                output.Write("level={0} ", _options.GrafanaLevels ? GrafanaLevelValue(logEvent.Level) : logEvent.Level.ToString());
             var properties = logEvent.Properties.Where(p => _propertyKeyFilter(p.Key));
             if (properties.Any())
             {
@@ -70,11 +72,11 @@ namespace Serilog.Logfmt
         {
             var exception = logEvent.Exception;
             var dataOptions = _options.ExceptionOptions.ExceptionDataFormat;
-            output.Write("ts={0} ", logEvent.Timestamp.UtcDateTime.ToString("o"));
+            if (!_options.ExcludeTS)
+                output.Write("ts={0} ", logEvent.Timestamp.UtcDateTime.ToString("o"));
             if (dataOptions != LogfmtExceptionDataFormat.None)
             {
-
-                if (dataOptions.HasFlag(LogfmtExceptionDataFormat.Level))
+                if (dataOptions.HasFlag(LogfmtExceptionDataFormat.Level) && !_options.ExcludeLevel)
                 {
                     output.Write("level={0} ", _options.GrafanaLevels ? "err" : LogEventLevel.Error.ToString());
                 }

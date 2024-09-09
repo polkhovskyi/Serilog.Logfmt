@@ -11,6 +11,8 @@ namespace Serilog.Logfmt
 
         internal bool NormalizeCase { get; private set; }
         internal bool GrafanaLevels { get; private set; }
+        internal bool ExcludeTS { get; private set; }
+        internal bool ExcludeLevel { get; private set; }
 
         internal LogExceptionOptions ExceptionOptions {get;}
 
@@ -24,6 +26,8 @@ namespace Serilog.Logfmt
         {
             NormalizeCase = true;
             GrafanaLevels = true;
+            ExcludeTS = false;
+            ExcludeLevel = false;
             PropertyKeyFilter = k => false;
             ExceptionOptions = new LogExceptionOptions();
             DoubleQuotesAction = DoubleQuotesAction.ConvertToSingle;
@@ -57,6 +61,18 @@ namespace Serilog.Logfmt
         public LogfmtOptions IncludeAllProperties()
         {
             PropertyKeyFilter = k => true;
+            return this;
+        }
+
+        public LogfmtOptions ExcludeTSProperty()
+        {
+            ExcludeTS = false;
+            return this;
+        }
+
+        public LogfmtOptions ExcludeLevelProperty()
+        {
+            ExcludeLevel = false;
             return this;
         }
         
